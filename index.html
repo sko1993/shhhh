@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Reseller - Made by sko</title>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #111827, #000);
+      color: #ffffffcc;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+    h1 {
+      color: #fff;
+      text-align: center;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: #1f2937;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 20px #0ff3;
+    }
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid #444;
+      text-align: center;
+    }
+    th {
+      background-color: #111827;
+      color: #fff;
+    }
+    tr:hover {
+      background-color: #2d3748;
+    }
+    input, button {
+      padding: 0.6rem;
+      margin: 0.2rem;
+      border: none;
+      border-radius: 8px;
+    }
+    input {
+      width: 100%;
+    }
+    .hidden {
+      display: none;
+    }
+    #footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #888;
+    }
+    .glow {
+      text-shadow: 0 0 8px #fff;
+    }
+    .mod-controls {
+      background: #111;
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      box-shadow: 0 0 10px #0ff4;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="glow">🚀 Product Reseller - Made by sko</h1>
+
+  <div class="mod-controls">
+    <input type="password" id="mod-password" placeholder="Enter mod password...">
+    <button onclick="enterModMode()">Enter Mod Mode</button>
+  </div>
+
+  <div id="mod-panel" class="hidden">
+    <h3>📦 Add New Product</h3>
+    <input type="text" id="product-name" placeholder="Product Name">
+    <input type="text" id="product-link" placeholder="Product Link">
+    <input type="text" id="product-price" placeholder="Price">
+    <input type="text" id="product-rating" placeholder="Rating (1-5)">
+    <input type="file" id="product-image">
+    <button onclick="addProduct()">➕ Add Product</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Product</th>
+        <th>Link</th>
+        <th>Rating</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody id="product-table"></tbody>
+  </table>
+
+  <div id="footer">© 2025 sko | All rights reserved</div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_UMoW73Qyybs2F4Gnka13--ib-g4CP40",
+      authDomain: "productreseller-e4080.firebaseapp.com",
+      databaseURL: "https://productreseller-e4080-default-rtdb.firebaseio.com",
+      projectId: "productreseller-e4080",
+      storageBucket: "productreseller-e4080.firebasestorage.app",
+      messagingSenderId: "85808690941",
+      appId: "1:85808690941:web:6c864e16adde9ef889b094",
+      measurementId: "G-R4TMCEP69D"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const productTable = document.getElementById('product-table');
+
+    function renderProduct(key, product) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><img src="${product.image}" style="width:50px; height:50px; border-radius:8px;"></td>
+        <td>${product.name}</td>
+        <td><a href="${product.link}" target="_blank">🔗 Link</a></td>
+        <td>${product.rating}</td>
+        <td>$${product.price}</td>
+      `;
+      productTable.appendChild(row);
+    }
+
+    function loadProducts() {
+      db.ref('products').on('value', (snapshot) => {
+        productTable.innerHTML = '';
+        snapshot.forEach(child => {
+          renderProduct(child.key, child.val());
+        });
+      });
+    }
+
+    function addProduct() {
+      const name = document.getElementById('product-name').value;
+      const link = document.getElementById('product-link').value;
+      const price = document.getElementById('product-price').value;
+      const rating = document.getElementById('product-rating').value;
+      const imageFile = document.getElementById('product-image').files[0];
+
+      if (!imageFile) return alert('Please select an image.');
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const product = { name, link, price, rating, image: e.target.result };
+        db.ref('products').push(product);
+      }
+      reader.readAsDataURL(imageFile);
+    }
+
+    function enterModMode() {
+      const password = document.getElementById('mod-password').value;
+      if (password === 'Salle134') {
+        document.getElementById('mod-panel').classList.remove('hidden');
+        alert('Mod mode activated!');
+      } else {
+        alert('Wrong password!');
+      }
+    }
+
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>
 
